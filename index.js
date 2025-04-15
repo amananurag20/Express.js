@@ -1,37 +1,49 @@
 const express = require("express");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+
+const userModel = require("./models/userModel");
 
 const app = express();
 
-app.use(express.json()); //json->js object
-app.use(express.urlencoded({ extended: false })); //parse form data
+const connectDb = async () => {
+  try {
+    await mongoose.connect(
+      "mongodb+srv://amananurag20:j4DgBaxPkIrFOQcu@cluster0.dol4im4.mongodb.net/game"
+    );
+    console.log("mongodb connected");
+  } catch (e) {
+    console.log(e);
+  }
+};
 
-app.get("/products", function (req, res) {
-  console.log("route hit hua");
-  return res.send("hi dear");
-  console.log("hi how are you");
-});
+connectDb();
+// mongodb+srv://amananurag20:j4DgBaxPkIrFOQcu@cluster0.dol4im4.mongodb.net/
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-app.post("/products", function (req, res) {
-  console.log("product route hit hua");
-  console.log(req.body);
-  res.send("post product ka data hai");
-});
+app.post("/users", async function (req, res) {
+  const { email, password, name, phoneNumber } = req.body;
 
-app.put("/products", function (req, res) {
-  console.log("product route hit hua");
-  res.send("product ka data hai");
-});
+  if (!email || !password || !name || !phoneNumber) {
+    return res.json({ message: "Please fill in all fields" });
+  }
 
-app.delete("/products", function (req, res) {
-  console.log("product route hit hua");
-  res.send("product ka data hai");
-});
+  const hashedPassword = await bcrypt.hash(password, 10);
+  console.log("hashpassword", hashedPassword);
 
-app.get("/products/:name", (req, res) => {
-  let name = req.params.name;
-  console.log(req.query);
-
-  res.send(`<h1>Welcome ${name}</h1>`);
+  try {
+    const user = await userModel.create({
+      name: name,
+      email: email,
+      password: hashedPassword,
+      phoneNumber,
+    });
+    res.json({ success: true, user: user });
+  } catch (e) {
+    console.log(e);
+    res.json({ success: false, message: "something went wrong" });
+  }
 });
 
 app.listen(5000, function () {
