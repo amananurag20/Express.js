@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const userModel = require("./models/userModel");
 
@@ -24,11 +25,18 @@ app.use(express.urlencoded({ extended: false }));
 app.post("/users", async function (req, res) {
   const { email, password, name, phoneNumber } = req.body;
 
+  if (!email || !password || !name || !phoneNumber) {
+    return res.json({ message: "Please fill in all fields" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  console.log("hashpassword", hashedPassword);
+
   try {
     const user = await userModel.create({
       name: name,
       email: email,
-      password,
+      password: hashedPassword,
       phoneNumber,
     });
     res.json({ success: true, user: user });
