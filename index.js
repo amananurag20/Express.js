@@ -46,6 +46,16 @@ app.post("/users", async function (req, res) {
   }
 });
 
+app.get("/users", async (req, res) => {
+  const users = await userModel.find({});
+  return res.json({ users: users });
+});
+
+app.get("/users/:id", async (req, res) => {
+  const id = req.params.id;
+  const user = await userModel.findById(id);
+  res.json({ user });
+});
 app.listen(5000, function () {
   console.log("server is running on port 5000");
 });
