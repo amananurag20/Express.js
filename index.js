@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const userModel = require("./models/userModel");
 const verifyToken = require("./middleware/verifyToken");
 
@@ -22,6 +23,7 @@ connectDb();
 // mongodb+srv://amananurag20:j4DgBaxPkIrFOQcu@cluster0.dol4im4.mongodb.net/
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.post("/users/signup", async function (req, res) {
   const { email, password, name, phoneNumber } = req.body;
@@ -77,11 +79,17 @@ app.post("/users/login", async (req, res) => {
       { email: existingUser.email, id: existingUser._id },
       "helloworld",
       {
-        expiresIn: "30s",
+        expiresIn: "30m",
       }
     );
 
-    return res.json({ token, success: "true", userName: existingUser.name });
+    res.cookie("token", token, {
+      httpOnly: true,
+      // maxAge: 1000 * 30,
+      expires: new Date(Date.now() + 1000 * 30),
+    });
+
+    return res.json({ success: "true", userName: existingUser.name });
   } catch (e) {
     console.log(e);
     res.json({ message: "something went wrong", success: false });
@@ -89,7 +97,8 @@ app.post("/users/login", async (req, res) => {
 });
 
 app.get("/users", verifyToken, async (req, res) => {
-  const users = await userModel.find({ email: req.user.email });
+  console.log(req.cookies);
+  const users = await userModel.find({ email: req.user?.email });
   return res.json({ users: users });
 });
 
