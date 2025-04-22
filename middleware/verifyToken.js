@@ -5,7 +5,7 @@ const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
 
   try {
-    let userData = jwt.verify(token, "helloworld");
+    let userData = jwt.verify(token, process.env.JWT_SECRET);
     req.user = userData;
     next();
   } catch (e) {
