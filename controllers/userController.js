@@ -46,10 +46,10 @@ const login = async (req, res) => {
 };
 
 const signup = async function (req, res) {
-  const { email, password, name, phoneNumber } = req.body;
+  const { email, password, name } = req.body;
 
-  if (!email || !password || !name || !phoneNumber) {
-    return res.json({ message: "Please fill in all fields" }); //service layer
+  if (!email || !password || !name) {
+    return res.json({ message: "Please fill all the fields" }); //service layer
   }
   // check if user already exists
 
@@ -65,7 +65,6 @@ const signup = async function (req, res) {
       name: name,
       email: email,
       password: hashedPassword,
-      phoneNumber,
     });
     res.json({ success: true, user: user });
   } catch (e) {

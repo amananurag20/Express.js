@@ -4,9 +4,12 @@ const userRouter = require("./routes/userRoutes");
 const connectDb = require("./config/dbConnection");
 const app = express();
 const dotenv = require("dotenv");
+const cors = require("cors");
 dotenv.config();
 
 connectDb();
+
+app.use(cors());
 
 // mongodb+srv://amananurag20:j4DgBaxPkIrFOQcu@cluster0.dol4im4.mongodb.net/
 app.use(express.json());
