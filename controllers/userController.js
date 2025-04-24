@@ -35,7 +35,7 @@ const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       // maxAge: 1000 * 30,
-      expires: new Date(Date.now() + 1000 * 30),
+      expires: new Date(Date.now() + 1000 * 60 * 60),
     });
 
     return res.json({ success: "true", userName: existingUser.name });
@@ -96,6 +96,21 @@ const deleteUser = async (req, res) => {
   res.json({ user });
 };
 
+const tokenVerification = async (req, res) => {
+  const token = req.cookies?.token;
+
+  if (!token) {
+    return res.status(401).json({ valid: false, message: "No token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({ valid: true, user: decoded });
+  } catch (err) {
+    res.status(401).json({ valid: false, message: "Invalid or expired token" });
+  }
+};
+
 module.exports = {
   login,
   signup,
@@ -103,4 +118,5 @@ module.exports = {
   getAllUsers,
   updateUser,
   deleteUser,
+  tokenVerification,
 };

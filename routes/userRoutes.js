@@ -5,6 +5,7 @@ const {
   getUserDetails,
   getAllUsers,
   updateUser,
+  tokenVerification,
 } = require("../controllers/userController");
 const verifyToken = require("../middleware/verifyToken");
 
@@ -19,5 +20,6 @@ router.get("/", verifyToken, getUserDetails);
 router.get("/get-all-users", verifyToken, getAllUsers);
 // http://localhost:5000/users/signup
 router.put("/:id", updateUser);
+router.get("/verify-token", tokenVerification);
 
 module.exports = router;

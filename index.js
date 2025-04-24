@@ -9,7 +9,12 @@ dotenv.config();
 
 connectDb();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5174"],
+    credentials: true,
+  })
+);
 
 // mongodb+srv://amananurag20:j4DgBaxPkIrFOQcu@cluster0.dol4im4.mongodb.net/
 app.use(express.json());
