@@ -5,16 +5,21 @@ const connectDb = require("./config/dbConnection");
 const app = express();
 const dotenv = require("dotenv");
 const cors = require("cors");
+const { Server } = require("socket.io");
+
 dotenv.config();
+const http = require("http");
 
-connectDb();
-
-app.use(
-  cors({
-    origin: ["http://localhost:5174"],
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
-  })
-);
+  },
+});
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+connectDb();
 
 // mongodb+srv://amananurag20:j4DgBaxPkIrFOQcu@cluster0.dol4im4.mongodb.net/
 app.use(express.json());
@@ -22,9 +27,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/users", userRouter);
-// http://localhost:5000/users/signup
+
+io.on("connection", (socket) => {
+  console.log("user connected", socket.id);
+});
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, function () {
+server.listen(PORT, function () {
   console.log("server is running on port 5000");
 });
