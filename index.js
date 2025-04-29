@@ -30,6 +30,12 @@ app.use("/users", userRouter);
 
 io.on("connection", (socket) => {
   console.log("user connected", socket.id);
+
+  socket.on("textChange", (data) => {
+    console.log("textChange", data);
+
+    socket.broadcast.emit("updatedText", data);
+  });
 });
 
 const PORT = process.env.PORT || 5000;
