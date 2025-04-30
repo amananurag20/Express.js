@@ -6,6 +6,8 @@ const app = express();
 const dotenv = require("dotenv");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const fs = require("fs");
+const crypto = require("crypto");
 
 dotenv.config();
 const http = require("http");
@@ -36,6 +38,37 @@ io.on("connection", (socket) => {
 
     socket.broadcast.emit("updatedText", data);
   });
+
+  socket.on("joinRoom", (room) => {
+    console.log("user joined room", room, socket.id);
+    socket.join(room);
+  });
+});
+
+// fs.readFile("file.txt", "utf8", (err, data) => {
+//   if (err) {
+//     console.log(err);
+//     return;
+//   }
+
+//   console.log(data);
+// });
+
+// fs.writeFile("movie.text", "Hello World how are you", (err) => {
+//   if (err) throw err;
+//   console.log("Written!");
+// });
+
+// fs.appendFile("file.txt", "\nAppended line", (err) => {
+//   if (err) throw err;
+// });
+// fs.unlink("movie.text", (err) => {
+//   if (err) throw err;
+// });
+
+crypto.pbkdf2("12345", "salt", 100000, 64, "sha512", (err, key) => {
+  if (err) throw err;
+  console.log(key.toString("hex"));
 });
 
 const PORT = process.env.PORT || 5000;
