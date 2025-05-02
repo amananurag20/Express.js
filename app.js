@@ -5,7 +5,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 console.log("hello world");
 
-process.env.UV_THREADPOOL_SIZE = 6;
 var a = 1;
 var b = 2;
 
